@@ -12,7 +12,7 @@ const gameBoard = (() => {
         board[index] = symbol;
     };
 
-    const render = (board) => {
+    const render = () => {
         const squares = document.querySelectorAll('.square');
         squares.forEach((square, index) => {
             square.textContent = board[index];
@@ -37,24 +37,40 @@ const gameController = (() => {
     const player1 = playerCreator("Player 1", "X");
     const player2 = playerCreator("Player 2", "O");
     let activePlayer = player1;
-    // let isGameOver = false;
+    let isGameOver = false;
 
-    const startGame = () => {
-        //
-    };
+    // const startGame = () => {
+    //   clearBoard, render, gameover=false //
+    // };
     
     const playTurn = (index) => {
         const currentPlayerSymbol = activePlayer.getSymbol();
-        if (gameBoard.getBoard()[index] === '') {
+        if (gameBoard.getBoard()[index] !== '') {
+            return;
+        }
+
             gameBoard.updateCell(index, currentPlayerSymbol);
             gameBoard.render((gameBoard.getBoard()));
-        }  else {
-            //square is taken, show message, chose empty square!!//
+        
+
+        if (checkWin(currentPlayerSymbol)) {
+            isGameOver = true;
+            alert(`${activePlayer.getName()} wins!`);
+            return;
         }
+
+        if (checkTie()) {
+            isGameOver = true;
+            alert("It's a tie!");
+            return;
+        }
+
+        toggleActivePlayer();
+        console.log(activePlayer.getName(), activePlayer.getSymbol());
     };
 
     const toggleActivePlayer = () => {
-
+        activePlayer = activePlayer === player1 ? player2 : player1;
     };
 
     const checkWin = (symbol) => {
@@ -71,10 +87,14 @@ const gameController = (() => {
             [0, 4, 8],
             [2, 4, 6],
         ];
-    }
+
+        return winningCombos.some((combo) =>
+            combo.every((index) => gameBoard.getBoard()[index] === symbol)
+        );
+    };
 
     const checkTie = () => {
-
+        return !gameBoard.getBoard().includes("");
     };
 
     return { playTurn };

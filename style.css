@@ -1,0 +1,18 @@
+/* Set box sizing and reset margins and padding for all elements */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Set font family and size for body */
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+}
+
+h1,
+h3 {
+    text-align: center;
+    margin: 20px 0px 20px 0px;
+}
