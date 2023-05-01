@@ -42,11 +42,12 @@
     
     <div id="game-screen">
         <h1>Tic-Tac-Toe</h1>
-        <h3>*three in a row makes you a winner*</h3>
+        <h3 id="game-message">*three in a row makes you a winner*</h3>
         <div id="game-area">
             <div class="player" id="player1">
                 <div class="name"></div>
                 <div class="symbol"></div>
+                <div id="player1-turn"></div>
             </div>
             <div id="game-container">
                 <div class="row">
@@ -68,8 +69,10 @@
             <div class="player" id="player2">
                 <div class="name"></div>
                 <div class="symbol"></div>
+                <div id="player2-turn"></div>
             </div>
         </div>
+        <button id="restart-btn">Restart Game</button>
     </div>
     <script src="app.js"></script>
 </body>

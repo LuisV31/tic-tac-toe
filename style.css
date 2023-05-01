@@ -92,3 +92,8 @@ input[type='radio'] {
     border: 2px solid #333;
     background-color: #a49f9fe4;
 }
+
+button {
+    display: block;
+    margin: 0 auto;
+}
