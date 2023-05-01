@@ -8,6 +8,38 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="start-screen">
+        <h1>Tic-Tac-Toe</h1>
+        <form action="">
+            <div>
+                <label for="player1-name-input">Enter your name:</label>
+                <input type="text" id="player1-name-input" name="name" maxlength="15" required>
+            </div>
+    
+            <!-- this is for future 2-player implementation -->
+            <!-- <div>
+                    <label for="player2-name-input">Player 2 Name:</label>
+                    <input type="text" id="player2-name-input">
+                </div> -->
+    
+            <div class="symbol-container">
+                <label>Choose your symbol:</label>
+                <div>
+                    <input type="radio" id="symbol-x" name="symbol" value="X" required>
+                    <label for="symbol-x"><img src="/images/x-symbol.svg" alt="X symbol"></label>
+                </div>
+                <div>
+                    <input type="radio" id="symbol-o" name="symbol" value="O" required>
+                    <label for="symbol-o"><img src="/images/o-symbol.svg" alt="O symbol"></label>
+                </div>
+            </div>
+    
+            <div>
+                <input type="button" value="Start Game" id="start-btn">
+            </div>
+        </form>
+    </div>
+    
     <div id="game-screen">
         <h1>Tic-Tac-Toe</h1>
         <h3>*three in a row makes you a winner*</h3>

@@ -1,3 +1,13 @@
+const gameBoardContainer = document.getElementById("game-container");
+const startScreen = document.getElementById("start-screen");
+const gameScreen = document.getElementById("game-screen");
+
+const player1NameDisplay = document.querySelector('#player1 .name');
+const player1SymbolDisplay = document.querySelector('#player1 .symbol');
+const player2NameDisplay = document.querySelector('#player2 .name');
+const player2SymbolDisplay = document.querySelector('#player2 .symbol');
+
+
 const gameBoard = (() => {
     let board = ["", "", "", "", "", "", "", "", ""];
     
@@ -5,26 +15,22 @@ const gameBoard = (() => {
 
     const clearBoard = () => {
         board = board.fill("");
-        render(board);
+        render();
     };
 
     const updateCell = (index, symbol) => {
         board[index] = symbol;
+        render();
     };
 
     const render = () => {
         const squares = document.querySelectorAll('.square');
         squares.forEach((square, index) => {
             square.textContent = board[index];
-            square.addEventListener('click', () => {
-                gameController.playTurn(index);
-            });
         });
     };
     
-    return {
-        getBoard, clearBoard, updateCell, render 
-    }
+    return { getBoard, clearBoard, updateCell, render };
 })();
 
 const playerCreator = (name, symbol) => {
@@ -34,25 +40,35 @@ const playerCreator = (name, symbol) => {
 };
 
 const gameController = (() => {
-    const player1 = playerCreator("Player 1", "X");
-    const player2 = playerCreator("Player 2", "O");
-    let activePlayer = player1;
-    let isGameOver = false;
+    let player1, player2, activePlayer, isGameOver;
 
-    // const startGame = () => {
-    //   clearBoard, render, gameover=false //
-    // };
+    const startGame = () => {
+        const symbol1 = document.querySelector('input[name="symbol"]:checked').value;
+        const symbol2 = symbol1 === 'X' ? 'O' : 'X';
+        player1 = playerCreator(document.getElementById('player1-name-input').value, symbol1);
+        player2 = playerCreator("Computer", symbol2);
+        activePlayer = player1;
+        startScreen.style.display = 'none';
+        gameScreen.style.display = 'block';
+        isGameOver = false;
+        updatePlayerDisplay();
+    };
     
+    const updatePlayerDisplay = () => {
+        player1NameDisplay.textContent = player1.getName();
+        player1SymbolDisplay.textContent = player1.getSymbol();
+        player2NameDisplay.textContent = player2.getName();
+        player2SymbolDisplay.textContent = player2.getSymbol();
+    }
+
     const playTurn = (index) => {
         const currentPlayerSymbol = activePlayer.getSymbol();
         if (gameBoard.getBoard()[index] !== '') {
             return;
         }
 
-            gameBoard.updateCell(index, currentPlayerSymbol);
-            gameBoard.render((gameBoard.getBoard()));
+        gameBoard.updateCell(index, currentPlayerSymbol);
         
-
         if (checkWin(currentPlayerSymbol)) {
             isGameOver = true;
             alert(`${activePlayer.getName()} wins!`);
@@ -66,7 +82,6 @@ const gameController = (() => {
         }
 
         toggleActivePlayer();
-        console.log(activePlayer.getName(), activePlayer.getSymbol());
     };
 
     const toggleActivePlayer = () => {
@@ -97,8 +112,18 @@ const gameController = (() => {
         return !gameBoard.getBoard().includes("");
     };
 
-    return { playTurn };
+    return { startGame, playTurn };
 })();
 
-
+document.getElementById("start-btn").addEventListener("click", () => {
+    gameController.startGame();
+});
+const squares = document.querySelectorAll(".square");
+squares.forEach((square, index) => {
+    square.addEventListener("click", () => {
+        if (!gameController.isGameOver) {
+            gameController.playTurn(index);
+        }
+    });
+});
 

@@ -11,8 +11,84 @@ body {
     font-size: 16px;
 }
 
-h1,
-h3 {
+h1, h3 {
     text-align: center;
     margin: 20px 0px 20px 0px;
+}
+
+/* Style for start screen */
+#start-screen {
+    margin: 0 auto;
+}
+
+/* Hide game board container inistially */
+#game-screen {
+    display: none;
+}
+
+#game-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    display: flex;
+}
+
+.square {
+    border: 2px solid black;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 50px;
+}
+
+.square:hover {
+    background-color: #eee;
+}
+
+.player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.symbol {
+    font-size: 80px;
+    margin-bottom: 10px;
+}
+
+.symbol-container {
+    display: flex;
+    align-items: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+input[type='radio'] {
+    appearance: none;
+    outline: none;
+    border: none;
+}
+
+.symbol-container input[type="radio"]:hover+label img {
+    background-color: #a49f9fe4;
+}
+
+.symbol-container input[type="radio"]:checked+label img {
+    border: 2px solid #333;
+    background-color: #a49f9fe4;
 }
