@@ -4,9 +4,9 @@ const gameScreen = document.getElementById("game-screen");
 
 const player1NameDisplay = document.querySelector('#player1 .name');
 const player1SymbolDisplay = document.querySelector('#player1 .symbol');
+const player1TurnDisplay = document.getElementById("player1-turn");
 const player2NameDisplay = document.querySelector('#player2 .name');
 const player2SymbolDisplay = document.querySelector('#player2 .symbol');
-const player1TurnDisplay = document.getElementById("player1-turn");
 const player2TurnDisplay = document.getElementById("player2-turn");
         
 
@@ -71,17 +71,36 @@ const gameController = (() => {
     
     const togglePlayerTurnMsg = () => {
         if (activePlayer === player1) {
-            player1TurnDisplay.textContent = "Your turn!"
+            player1TurnDisplay.textContent = "Make your move!"
             player2TurnDisplay.textContent = "";
         } else {
             player1TurnDisplay.textContent = "";
-            player2TurnDisplay.textContent = "Your turn!";
+            player2TurnDisplay.textContent = "Make your move!";
         }
+    };
+
+    const getRandomMove = () => {
+        const board = gameBoard.getBoard();
+        const availableMoves = board.reduce((moves, cell, index) => {
+            if (cell === "") {
+                moves.push(index);
+            }
+            return moves;
+        }, []);
+        const randomIndex = Math.floor(Math.random() * availableMoves.length);
+
+        console.log("Available moves:", availableMoves);
+        console.log("Random index:", randomIndex);
+
+
+        return availableMoves[randomIndex];
     };
 
     const playTurn = (index) => {
         const currentPlayerSymbol = activePlayer.getSymbol();
-        if (gameBoard.getBoard()[index] !== '' || isGameOver) {
+        const board = gameBoard.getBoard();
+
+        if (board[index] !== '' || isGameOver) {
             return;
         }
 
@@ -100,7 +119,25 @@ const gameController = (() => {
         }
 
         toggleActivePlayer();
-        togglePlayerTurnMsg();
+
+        if (activePlayer === player2) {
+            const aiMoveIndex = getRandomMove();
+            gameBoard.updateCell(aiMoveIndex, player2.getSymbol());
+
+            if (checkWin(player2.getSymbol())) {
+                isGameOver = true;
+                updateGameMessage(`${player2.getName()} wins!`);
+                return;
+            }
+            
+            if (checkTie()) {
+                isGameOver = true;
+                updateGameMessage("It's a tie!");
+                return;
+            }
+
+            toggleActivePlayer();
+        }
     };
 
     const toggleActivePlayer = () => {
@@ -135,7 +172,7 @@ const gameController = (() => {
         activePlayer = player1;
         gameBoard.clearBoard();
         isGameOver = false;
-        updateGameMessage("*three in a row makes you a winner")
+        updateGameMessage("*three in a row makes you a winner*")
         togglePlayerTurnMsg();
     }
 
