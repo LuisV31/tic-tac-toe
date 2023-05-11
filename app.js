@@ -81,6 +81,7 @@ const gameController = (() => {
         return availableMoves[randomIndex];
     };
 
+    // cont minMaxFun = (game)
     const playTurn = (index) => {
         const currentPlayerSymbol = activePlayer.getSymbol();
         const board = gameBoard.getBoard();
@@ -160,7 +161,7 @@ const gameController = (() => {
         activePlayer = player1;
         gameBoard.clearBoard();
         isGameOver = false;
-        updateGameMessage("*three in a row makes you a winner*")
+        updateGameMessage("* three in a row makes you a winner *")
     }
 
     return { startGame, playTurn, restartGame };
