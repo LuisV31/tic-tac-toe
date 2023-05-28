@@ -22,6 +22,7 @@ const gameBoard = (() => {
 
     const updateCell = (index, symbol) => {
         board[index] = symbol;
+        console.log("board state:", board);
         render();
     };
 
@@ -42,8 +43,13 @@ const playerCreator = (name, symbol) => {
 };
 
 const gameController = (() => {
-    let player1, player2, activePlayer, isGameOver;
+    let player1, player2, activePlayer, isGameOver, difficultyLevel = "easy";
 
+    const setDifficulty = (newDifficulty) => {
+        difficultyLevel = newDifficulty;
+        console.log("difficulty level set:", difficultyLevel);
+    };
+    
     const startGame = () => {
         const symbol1 = document.querySelector('input[name="symbol"]:checked').value;
         const symbol2 = symbol1 === 'X' ? 'O' : 'X';
@@ -62,26 +68,88 @@ const gameController = (() => {
         player2NameDisplay.textContent = player2.getName();
         player2SymbolDisplay.textContent = player2.getSymbol();
     };
-    
+
     const updateGameMessage = (message) => {
         const gameMessage = document.getElementById("game-message");
         gameMessage.textContent = message;
     };
 
-    const getRandomMove = () => {
+    const getRandomAiMove = () => {
         const board = gameBoard.getBoard();
-        const availableMoves = board.reduce((moves, cell, index) => {
-            if (cell === "") {
-                moves.push(index);
-            }
-            return moves;
-        }, []);
+        const availableMoves = board
+            .map((cell, index) => (cell === "" ? index : null))
+            .filter((index) => index !== null);
+        
         const randomIndex = Math.floor(Math.random() * availableMoves.length);
 
         return availableMoves[randomIndex];
     };
 
-    // cont minMaxFun = (game)
+    const getAIMoveIndex = () => {
+        if (difficultyLevel=== "easy") {
+            return getRandomAiMove();
+        } else if (difficultyLevel=== "medium") {
+            const move = miniMax(gameBoard.getBoard(), 0, true, 3).move;
+            // Introduce a 40% chance for a random move instead of opitmal move//
+            if (Math.random() < 0.4) {
+                return getRandomAiMove();
+            }
+            return move;
+        } else if (difficultyLevel === "hard") {
+            const move = miniMax(gameBoard.getBoard(), 0, true, Infinity).move;
+            return move;
+        }
+        console.log("ai diff level: ", difficultyLevel);
+    };
+
+    const miniMax = (board, depth, isMaximizingPlayer) => {
+        if (checkWin(board, player2.getSymbol())) {
+            return { score: 10 - depth };
+        } else if (checkWin(board, player1.getSymbol())) {
+            return { score: -10 + depth };
+        } else if (!board.includes('')) {
+            return { score: 0 };
+        }
+        
+        if (isMaximizingPlayer) {
+            let bestScore = -Infinity;
+            let move;
+
+            for (let i = 0; i < board.length; i++) {
+                if (board[i] === '') {
+                    board[i] = player2.getSymbol();
+                    let score = miniMax([...board], depth + 1, false);
+                    board[i] = '';
+
+                    if (score.score > bestScore) {
+                        bestScore = score.score;
+                        move = i;
+                    }
+                }
+            }
+
+            return { score: bestScore, move: move };
+        } else {
+            let bestScore = Infinity;
+            let move;
+
+            for (let i = 0; i < board.length; i++) {
+                if (board[i] === "") {
+                    board[i] = player1.getSymbol();
+                    let score = miniMax([...board], depth + 1, true);
+                    board[i] = "";
+
+                    if (score.score < bestScore) {
+                        bestScore = score.score;
+                        move = i;
+                    }
+                }
+            }
+            
+            return { score: bestScore, move: move };
+        }
+    };
+    
     const playTurn = (index) => {
         const currentPlayerSymbol = activePlayer.getSymbol();
         const board = gameBoard.getBoard();
@@ -92,7 +160,7 @@ const gameController = (() => {
 
         gameBoard.updateCell(index, currentPlayerSymbol);
         
-        if (checkWin(currentPlayerSymbol)) {
+        if (checkWin(board,currentPlayerSymbol)) {
             isGameOver = true;
             updateGameMessage(`${activePlayer.getName()} wins!`);
             return;
@@ -103,16 +171,18 @@ const gameController = (() => {
             updateGameMessage("It's a tie!");
             return;
         }
-
+        console.log("current player symbol:", currentPlayerSymbol);
+        console.log("current board state:", gameBoard.getBoard());
         toggleActivePlayer();
 
         if (activePlayer === player2) {
             
             setTimeout(() => {
-                const aiMoveIndex = getRandomMove();
+                const aiMoveIndex = getAIMoveIndex();
                 gameBoard.updateCell(aiMoveIndex, player2.getSymbol());
+                const updateBoard = gameBoard.getBoard();
 
-                if (checkWin(player2.getSymbol())) {
+                if (checkWin(updateBoard, player2.getSymbol())) {
                     isGameOver = true;
                     updateGameMessage(`${player2.getName()} wins!`);
                     return;
@@ -129,11 +199,12 @@ const gameController = (() => {
         }
     };
 
-    const toggleActivePlayer = () => {
-        activePlayer = activePlayer === player1 ? player2 : player1;
+        const toggleActivePlayer = () => {
+            activePlayer = activePlayer === player1 ? player2 : player1;
+            console.log("activeplayer:", activePlayer.getName());
     };
 
-    const checkWin = (symbol) => {
+    const checkWin = (board, symbol) => {
         const winningCombos = [
             //rows
             [0, 1, 2],
@@ -149,7 +220,7 @@ const gameController = (() => {
         ];
 
         return winningCombos.some((combo) =>
-            combo.every((index) => gameBoard.getBoard()[index] === symbol)
+            combo.every((index) => board[index] === symbol)
         );
     };
 
@@ -164,12 +235,42 @@ const gameController = (() => {
         updateGameMessage("* three in a row makes you a winner *")
     }
 
-    return { startGame, playTurn, restartGame };
+    return { startGame, playTurn, restartGame, setDifficulty};
 })();
 
+const clearButtonStyles = () => {
+    const buttons = document.querySelectorAll('.level-button');
+    buttons.forEach(button => button.classList.remove('selected'));
+}
+
+//user must select one of these to choose difficulty//
+document.getElementById("easy-btn").addEventListener("click", (event) => {
+    event.preventDefault();
+    clearButtonStyles();
+    event.target.classList.add('selected');
+    gameController.setDifficulty("easy");
+});
+
+document.getElementById("medium-btn").addEventListener("click", (event) => {
+    event.preventDefault();
+    clearButtonStyles();
+    event.target.classList.add('selected');
+    gameController.setDifficulty("medium");
+});
+
+document.getElementById("hard-btn").addEventListener("click", (event) => {
+    event.preventDefault();
+    clearButtonStyles();
+    event.target.classList.add('selected');
+    gameController.setDifficulty("hard");
+});
+
+//user must selects to set up and start game//
 document.getElementById("start-btn").addEventListener("click", () => {
     gameController.startGame();
 });
+
+//event listener on all squares for user to choose and playturn, followed by AI move.//
 const squares = document.querySelectorAll(".square");
 squares.forEach((square, index) => {
     square.addEventListener("click", () => {

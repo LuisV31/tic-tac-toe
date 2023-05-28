@@ -70,11 +70,12 @@ h1, h3 {
     justify-content: center;
     cursor: pointer;
     font-size: 50px;
-    color:rgb(151, 43, 82)
+    color:rgb(151, 43, 82);
+    transition: background-color 0.3s ease;
 }
 
 .square:hover {
-    background-color: #eee;
+    background-color: #ed28abeb;
 }
 
 .player {
@@ -131,34 +132,52 @@ input[type='radio'] {
 #levels {
     display: flex;
     justify-content: space-between;
-    width: 300px;
+    width: 400px;
     margin: 20px 0;
+}
+
+.selected {
+    background-color: #ff7f50;
+    border: 3px solid #000;
 }
 
 .level-button {
+    font-family: arcade;
+    font-size: 1em;
+    color: white;
+    border-radius: 10px;
     padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #ddd;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.5s;
     cursor: pointer;
+    outline: none;
+    background: linear-gradient(45deg, #cc419e 30%,#f6338a 90%);
 }
 
-.level-button:hover {
-    background-color: #ccc;
+.level-button:active {
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    transform: translateY(2px);
+    background-color: #0056b3;
 }
 
 #start-btn, #restart-btn {
+    background: linear-gradient(45deg, #cc419e 30%, #f6338a 90%);
     padding: 10px 20px;
-    margin: 20px 0;
+    margin: 10px;
     border: none;
-    border-radius: 3px;
-    background-color: #ddd;
+    border-radius: 10px;
+    color: white;
     cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.2em;
+    font-family: arcade;
+    text-align: center;
 }
 
-#start-btn, #restart-btn:hover {
+/* #start-btn, #restart-btn:hover {
     background-color: #ccc;
-}
+} */
 
 #restart-btn {
     display: block;
