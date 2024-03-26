@@ -22,7 +22,6 @@ const gameBoard = (() => {
 
     const updateCell = (index, symbol) => {
         board[index] = symbol;
-        console.log("board state:", board);
         render();
     };
 
@@ -85,18 +84,18 @@ const gameController = (() => {
         return availableMoves[randomIndex];
     };
 
-    const getAIMoveIndex = () => {
+    const getAIMove = () => {
         if (difficultyLevel=== "easy") {
             return getRandomAiMove();
         } else if (difficultyLevel=== "medium") {
-            const move = miniMax(gameBoard.getBoard(), 0, true, 3).move;
+            const move = miniMax(gameBoard.getBoard(), 0, true).move;
             // Introduce a 40% chance for a random move instead of opitmal move//
             if (Math.random() < 0.4) {
                 return getRandomAiMove();
             }
             return move;
         } else if (difficultyLevel === "hard") {
-            const move = miniMax(gameBoard.getBoard(), 0, true, Infinity).move;
+            const move = miniMax(gameBoard.getBoard(), 0, true).move;
             return move;
         }
         console.log("ai diff level: ", difficultyLevel);
@@ -150,7 +149,7 @@ const gameController = (() => {
         }
     };
     
-    const playTurn = (index) => {
+    const handlePlayerMove = (index) => {
         const currentPlayerSymbol = activePlayer.getSymbol();
         const board = gameBoard.getBoard();
 
@@ -172,13 +171,12 @@ const gameController = (() => {
             return;
         }
         console.log("current player symbol:", currentPlayerSymbol);
-        console.log("current board state:", gameBoard.getBoard());
         toggleActivePlayer();
 
         if (activePlayer === player2) {
             
             setTimeout(() => {
-                const aiMoveIndex = getAIMoveIndex();
+                const aiMoveIndex = getAIMove();
                 gameBoard.updateCell(aiMoveIndex, player2.getSymbol());
                 const updateBoard = gameBoard.getBoard();
 
@@ -235,7 +233,7 @@ const gameController = (() => {
         updateGameMessage("* three in a row makes you a winner *")
     }
 
-    return { startGame, playTurn, restartGame, setDifficulty};
+    return { startGame, handlePlayerMove, restartGame, setDifficulty};
 })();
 
 const clearButtonStyles = () => {
@@ -270,12 +268,12 @@ document.getElementById("start-btn").addEventListener("click", () => {
     gameController.startGame();
 });
 
-//event listener on all squares for user to choose and playturn, followed by AI move.//
+//event listener on all squares for user to choose and handlePlayerMove, followed by AI move.//
 const squares = document.querySelectorAll(".square");
 squares.forEach((square, index) => {
     square.addEventListener("click", () => {
         if (!gameController.isGameOver) {
-            gameController.playTurn(index);
+            gameController.handlePlayerMove(index);
         }
     });
 });
